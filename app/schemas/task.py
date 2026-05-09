@@ -8,6 +8,9 @@ class TaskBase(BaseModel):
     description: Optional[str] = None
     status: TaskStatus = TaskStatus.TODO
     due_date: Optional[datetime] = None
+    start_date: Optional[datetime] = None
+    estimation_date: Optional[datetime] = None
+    closed_date: Optional[datetime] = None
 
 class TaskCreate(TaskBase):
     project_id: str
@@ -18,12 +21,16 @@ class TaskUpdate(BaseModel):
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     due_date: Optional[datetime] = None
+    start_date: Optional[datetime] = None
+    estimation_date: Optional[datetime] = None
+    closed_date: Optional[datetime] = None
     assignee_id: Optional[str] = None
 
 class TaskResponse(TaskBase):
     id: str
     project_id: str
     assignee_id: Optional[str] = None
+    assigneeName: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
 

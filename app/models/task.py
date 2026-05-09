@@ -15,9 +15,16 @@ class Task(Base):
     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     assignee_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     due_date = Column(DateTime(timezone=True), nullable=True)
+    start_date = Column(DateTime(timezone=True), nullable=True)
+    estimation_date = Column(DateTime(timezone=True), nullable=True)
+    closed_date = Column(DateTime(timezone=True), nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     project = relationship("Project", back_populates="tasks")
     assignee = relationship("User", back_populates="tasks")
+
+    @property
+    def assigneeName(self):
+        return self.assignee.name if self.assignee else None

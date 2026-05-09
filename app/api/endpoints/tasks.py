@@ -55,8 +55,11 @@ def create_task(
             description=task_in.description,
             status=task_in.status,
             due_date=task_in.due_date,
+            start_date=task_in.start_date,
+            estimation_date=task_in.estimation_date,
+            closed_date=task_in.closed_date,
             project_id=task_in.project_id,
-            assignee_id=task_in.assignee_id
+            assignee_id=task_in.assignee_id if task_in.assignee_id else None
         )
         db.add(task)
         db.commit()
@@ -96,6 +99,9 @@ def update_task(
 
         # Admins can update any fields
         update_data = task_in.dict(exclude_unset=True)
+        if 'assignee_id' in update_data and not update_data['assignee_id']:
+            update_data['assignee_id'] = None
+
         for field, value in update_data.items():
             setattr(task, field, value)
         

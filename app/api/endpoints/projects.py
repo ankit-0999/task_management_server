@@ -29,6 +29,20 @@ def read_projects(
     except OperationalError:
         raise HTTPException(status_code=500, detail="Database connection error")
 
+@router.get("/{project_id}", response_model=ProjectResponse)
+def read_project(
+    project_id: str,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+        
+    # Optional: you can add RBAC check here if members shouldn't see projects they aren't part of
+    # For now, if the project exists, we return it.
+    return project
+
 @router.post("/", response_model=ProjectResponse)
 def create_project(
     *,
@@ -43,7 +57,11 @@ def create_project(
         project = Project(
             title=project_in.title,
             description=project_in.description,
-            owner_id=current_user.id
+            owner_id=current_user.id,
+            status=project_in.status,
+            start_date=project_in.start_date,
+            estimation_date=project_in.estimation_date,
+            closed_date=project_in.closed_date
         )
         db.add(project)
         db.commit()
@@ -92,6 +110,17 @@ def update_project(
         
     project.title = project_in.title
     project.description = project_in.description
+    
+    # Update new fields if they are provided or default to current
+    if project_in.status is not None:
+        project.status = project_in.status
+    if project_in.start_date is not None:
+        project.start_date = project_in.start_date
+    if project_in.estimation_date is not None:
+        project.estimation_date = project_in.estimation_date
+    if project_in.closed_date is not None:
+        project.closed_date = project_in.closed_date
+        
     db.commit()
     db.refresh(project)
     return project

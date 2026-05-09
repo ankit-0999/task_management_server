@@ -19,6 +19,11 @@ class Project(Base):
     description = Column(String)
     owner_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
+    status = Column(String, default="Todo")
+    start_date = Column(DateTime, nullable=True)
+    estimation_date = Column(DateTime, nullable=True)
+    closed_date = Column(DateTime, nullable=True)
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
