@@ -12,6 +12,9 @@ class TaskBase(BaseModel):
     estimation_date: Optional[datetime] = None
     closed_date: Optional[datetime] = None
 
+    class Config:
+        use_enum_values = True
+
 class TaskCreate(TaskBase):
     project_id: str
     assignee_id: Optional[str] = None
@@ -26,6 +29,9 @@ class TaskUpdate(BaseModel):
     closed_date: Optional[datetime] = None
     assignee_id: Optional[str] = None
 
+    class Config:
+        use_enum_values = True
+
 class TaskResponse(TaskBase):
     id: str
     project_id: str
@@ -35,4 +41,5 @@ class TaskResponse(TaskBase):
     updated_at: Optional[datetime] = None
 
     class Config:
+        use_enum_values = True
         from_attributes = True

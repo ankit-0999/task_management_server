@@ -11,7 +11,15 @@ class Task(Base):
     id = Column(String(36), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, index=True, nullable=False)
     description = Column(String)
-    status = Column(Enum(TaskStatus), default=TaskStatus.TODO, nullable=False)
+    status = Column(
+        Enum(
+            TaskStatus,
+            values_callable=lambda enum_cls: [item.value for item in enum_cls],
+            native_enum=True,
+        ),
+        default=TaskStatus.TODO,
+        nullable=False,
+    )
     project_id = Column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     assignee_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     due_date = Column(DateTime(timezone=True), nullable=True)
