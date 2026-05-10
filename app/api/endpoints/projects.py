@@ -38,9 +38,15 @@ def read_project(
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-        
-    # Optional: you can add RBAC check here if members shouldn't see projects they aren't part of
-    # For now, if the project exists, we return it.
+    
+    # RBAC: Members can only see projects they are part of, Admins can see their own projects
+    if current_user.role == UserRole.MEMBER:
+        if not current_user.joined_projects or project not in current_user.joined_projects:
+            raise HTTPException(status_code=403, detail="Access denied. You are not a member of this project.")
+    elif current_user.role == UserRole.ADMIN:
+        if project.owner_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Access denied. You do not own this project.")
+    
     return project
 
 @router.post("/", response_model=ProjectResponse)
