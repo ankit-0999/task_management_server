@@ -36,3 +36,7 @@ class Task(Base):
     @property
     def assigneeName(self):
         return self.assignee.name if self.assignee else None
+
+    @property
+    def projectName(self):
+        return self.project.title if self.project else None

@@ -86,11 +86,8 @@ def update_task(
             if task.assignee_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Forbidden. You can only update your own assigned tasks.")
                 
-            # If yes, ONLY allow updates to status. If they try to change the title, return HTTP 403
-            update_data = task_in.dict(exclude_unset=True)
-            if any(field != 'status' for field in update_data.keys()):
-                raise HTTPException(status_code=403, detail="Forbidden. Members can only update the task status.")
-                
+            # If yes, ONLY allow updates to status. We ignore other fields since the frontend
+            # form may submit them as read-only values.
             if task_in.status:
                 task.status = task_in.status
             db.commit()
@@ -111,7 +108,7 @@ def update_task(
     except OperationalError:
         raise HTTPException(status_code=500, detail="Database connection error")
 
-@router.delete("/{task_id}", response_model=TaskResponse)
+@router.delete("/{task_id}")
 def delete_task(
     *,
     db: Session = Depends(deps.get_db),
@@ -125,6 +122,6 @@ def delete_task(
         
         db.delete(task)
         db.commit()
-        return task
+        return {"status": "success", "detail": "Task deleted successfully"}
     except OperationalError:
         raise HTTPException(status_code=500, detail="Database connection error")

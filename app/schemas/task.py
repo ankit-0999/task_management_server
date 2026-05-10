@@ -35,6 +35,7 @@ class TaskUpdate(BaseModel):
 class TaskResponse(TaskBase):
     id: str
     project_id: str
+    projectName: Optional[str] = None
     assignee_id: Optional[str] = None
     assigneeName: Optional[str] = None
     created_at: datetime
